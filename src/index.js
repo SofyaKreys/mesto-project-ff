@@ -1,6 +1,6 @@
 
 
-import {initialCards, likeCard, deleteCard, createCard} from '../src/scripts/cards.js';
+import {initialCards, likeCard, deleteCard, createCard} from './components/cards.js';
 
 import {openModal, closeModal, closeByKey, closeOverlay} from '../src/components/modal.js';
 
@@ -17,6 +17,26 @@ import '../src/pages/index.css';
 // @todo: Вывести карточки на страницу
 
 const list = document.querySelector('.places__list');
+const profileDescription= document.querySelector('.profile__description');
+const profileTitle= document.querySelector('.profile__title')
+const popupNewCard = document.getElementById('popupNewCard');
+const addButton = document.querySelector('.profile__add-button');
+const closeButtonNewCard = popupNewCard.querySelector('.popup__close');
+const formCards = document.forms["new-place"];
+const name = formCards.elements["place-name"];
+const link = formCards.elements.link;
+const popupEdit = document.getElementById('popupEdit');
+const editButton = document.querySelector('.profile__edit-button');
+const closeButtonEdit = popupEdit.querySelector('.popup__close');
+const formPopupEdit = document.forms["edit-profile"];
+const nameInput = formPopupEdit.elements.name;
+const jobInput = formPopupEdit.elements.description;
+const popupImage = document.getElementById('popupImage');
+const cards = document.querySelectorAll('.card__image');
+const closeButtonImage = popupImage.querySelector('.popup__close');
+const popupCaption = popupImage.querySelector('.popup__caption');
+
+
 // const cardTemplate = document.querySelector('#card-template').content;
 
 function renderCards() {
@@ -29,9 +49,7 @@ renderCards();
 
 // закрытие и открытие "Новое место" NewCard
 // const popup = document.querySelector('.popup_is-opened');
-const popupNewCard = document.getElementById('popupNewCard');
-const addButton = document.querySelector('.profile__add-button');
-const closeButtonNewCard = popupNewCard.querySelector('.popup__close');
+
 
 function openPopupNewCard() {
     openModal(popupNewCard)
@@ -43,14 +61,11 @@ function closePopupNewCard() {
 
 addButton.addEventListener('click', openPopupNewCard);
 closeButtonNewCard.addEventListener('click', closePopupNewCard);
-document.addEventListener('keydown', closeByKey);
-document.addEventListener('click', closeOverlay);
+// document.addEventListener('keydown', closeByKey);
+popupNewCard.addEventListener('click', closeOverlay);
 
 // добавление новой карточки
 
-const formCards = document.forms["new-place"];
-const name = formCards.elements["place-name"];
-const link = formCards.elements.link;
 
 function handleFormSubmitCard(evt) {
     evt.preventDefault(); // Эта строчка отменяет стандартную отправку формы.
@@ -72,17 +87,16 @@ function handleFormSubmitCard(evt) {
 // он будет следить за событием “submit” - «отправка»
 formCards.addEventListener('submit', handleFormSubmitCard); 
 
+
+
 // закрытие и открытие "Редактировать" Edit
 
-const popupEdit = document.getElementById('popupEdit');
-const editButton = document.querySelector('.profile__edit-button');
-const closeButtonEdit = popupEdit.querySelector('.popup__close');
 
 function openPopupEdit() {
     openModal(popupEdit)
     // подставление значений
-    nameInput.value = document.querySelector('.profile__title').textContent;
-    jobInput.value = document.querySelector('.profile__description').textContent;
+    nameInput.value = profileTitle.textContent;
+    jobInput.value = profileDescription.textContent;
     // 
     
 }
@@ -94,14 +108,12 @@ function closePopupEdit() {
 
 editButton.addEventListener('click', openPopupEdit);
 closeButtonEdit.addEventListener('click', closePopupEdit);
+popupEdit.addEventListener('click', closeOverlay);
 
 // подставляем значения в поля "Редактировать" Edit 
 
-const formElement = document.forms["edit-profile"];
-const nameInput = formElement.elements.name;
-const jobInput = formElement.elements.description;
 
-function handleFormSubmit(evt) {
+function handleFormSubmitEdit(evt) {
     evt.preventDefault(); // Эта строчка отменяет стандартную отправку формы.
                                                 // Так мы можем определить свою логику отправки.
                                                 // О том, как это делать, расскажем позже.
@@ -111,26 +123,25 @@ function handleFormSubmit(evt) {
     // Выберите элементы, куда должны быть вставлены значения полей
 
     // Вставьте новые значения с помощью textContent
-    document.querySelector('.profile__title').textContent = nameInput.value;
-    document.querySelector('.profile__description').textContent = jobInput.value;
-    
+    profileTitle.textContent = nameInput.value;
+    profileDescription.textContent = jobInput.value;
+    closePopupEdit();
 }
 
 // Прикрепляем обработчик к форме:
 // он будет следить за событием “submit” - «отправка»
-formElement.addEventListener('submit', handleFormSubmit); 
+formPopupEdit.addEventListener('submit', handleFormSubmitEdit); 
 
 // закрытие и открытие "Картинки" Image
-const popupImage = document.getElementById('popupImage');
-const cards = document.querySelectorAll('.card__image');
-const closeButtonImage = popupImage.querySelector('.popup__close');
+
 
 function openImage(evt) {
     
     openModal(popupImage)
     popupImage.querySelector('.popup__image').src = evt.target.src;
+    popupImage.querySelector('.popup__image').alt = evt.target.alt;
     const card = evt.target.closest('.card');
-    popupImage.querySelector('.popup__caption').textContent = card.querySelector('.card__title').textContent;
+    popupCaption.textContent = card.querySelector('.card__title').textContent;
 }
 
 function closePopupImage() {
@@ -139,5 +150,6 @@ function closePopupImage() {
 
 // openImage.addEventListener('click', openImage);
 closeButtonImage.addEventListener('click', closePopupImage);
+popupImage.addEventListener('click', closeOverlay);
 
 

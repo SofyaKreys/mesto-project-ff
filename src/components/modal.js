@@ -1,11 +1,12 @@
 export function openModal(modal) {
     
     modal.classList.add("popup_is-opened");
-    
+    document.addEventListener('keydown', closeByKey);
 }
 
 export function closeModal(modal) {
     modal.classList.remove("popup_is-opened");
+    document.removeEventListener('keydown', closeByKey);
 }
 
 
@@ -18,10 +19,7 @@ export function closeByKey(evt) {
 }
 
 export function closeOverlay(evt) {
-    const popup = document.querySelector('.popup_is-opened');
-    if (evt.target === popup) {
-        closeModal(popup)
-    }
+        closeModal(evt.target)
 }
 
 

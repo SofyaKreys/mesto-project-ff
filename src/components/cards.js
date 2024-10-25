@@ -44,8 +44,8 @@ export function createCard(item, {deleteCard, likeCard, openImage}) {
   const likeButton = cardTemplateCopy.querySelector('.card__like-button');
   likeButton.addEventListener('click', likeCard);
 
-  const openButton = cardTemplateCopy.querySelector('.card__image');
-  openButton.addEventListener('click', openImage);
+  
+  cardImage.addEventListener('click', openImage);
 
   return cardTemplateCopy;
 }
