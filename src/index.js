@@ -35,7 +35,7 @@ const popupImage = document.getElementById('popupImage');
 const cards = document.querySelectorAll('.card__image');
 const closeButtonImage = popupImage.querySelector('.popup__close');
 const popupCaption = popupImage.querySelector('.popup__caption');
-
+const popupImageValue= popupImage.querySelector('.popup__image');
 
 // const cardTemplate = document.querySelector('#card-template').content;
 
@@ -51,16 +51,16 @@ renderCards();
 // const popup = document.querySelector('.popup_is-opened');
 
 
-function openPopupNewCard() {
-    openModal(popupNewCard)
-}
+// function openPopupNewCard() {
+//     openModal(popupNewCard)
+// }
 
-function closePopupNewCard() {
-   closeModal(popupNewCard)
-}
+// function closePopupNewCard() {
+//    closeModal(popupNewCard)
+// }
 
-addButton.addEventListener('click', openPopupNewCard);
-closeButtonNewCard.addEventListener('click', closePopupNewCard);
+addButton.addEventListener('click', () => openModal(popupNewCard));
+closeButtonNewCard.addEventListener('click', () => closeModal(popupNewCard)); 
 // document.addEventListener('keydown', closeByKey);
 popupNewCard.addEventListener('click', closeOverlay);
 
@@ -80,7 +80,7 @@ function handleFormSubmitCard(evt) {
    
     list.prepend(createCard({name:name.value, link:link.value}, {deleteCard, likeCard, openImage}))
     formCards.reset();
-    closePopupNewCard();
+    closeModal(popupNewCard);
 }
 
 // Прикрепляем обработчик к форме:
@@ -101,13 +101,13 @@ function openPopupEdit() {
     
 }
 
-function closePopupEdit() {
-    closeModal(popupEdit)
-}
+// function closePopupEdit() {
+//     closeModal(popupEdit)
+// }
 
 
 editButton.addEventListener('click', openPopupEdit);
-closeButtonEdit.addEventListener('click', closePopupEdit);
+closeButtonEdit.addEventListener('click', () => closeModal(popupEdit));
 popupEdit.addEventListener('click', closeOverlay);
 
 // подставляем значения в поля "Редактировать" Edit 
@@ -134,22 +134,23 @@ formPopupEdit.addEventListener('submit', handleFormSubmitEdit);
 
 // закрытие и открытие "Картинки" Image
 
+popupImage.querySelector('.popup__image')
+    
 
 function openImage(evt) {
-    
     openModal(popupImage)
-    popupImage.querySelector('.popup__image').src = evt.target.src;
-    popupImage.querySelector('.popup__image').alt = evt.target.alt;
+    popupImageValue.src = evt.target.src;
+    popupImageValue.alt = evt.target.alt;
     const card = evt.target.closest('.card');
     popupCaption.textContent = card.querySelector('.card__title').textContent;
 }
 
-function closePopupImage() {
-    closeModal(popupImage);
-}
+// function closePopupImage() {
+//     closeModal(popupImage);
+// }
 
 // openImage.addEventListener('click', openImage);
-closeButtonImage.addEventListener('click', closePopupImage);
+closeButtonImage.addEventListener('click', () => closeModal(popupImage));
 popupImage.addEventListener('click', closeOverlay);
 
 

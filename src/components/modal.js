@@ -19,7 +19,9 @@ export function closeByKey(evt) {
 }
 
 export function closeOverlay(evt) {
-        closeModal(evt.target)
+    if (evt.target === evt.currentTarget) { 
+        closeModal(evt.target) 
+    }  
 }
 
 
