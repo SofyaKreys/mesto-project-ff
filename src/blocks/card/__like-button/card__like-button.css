@@ -18,3 +18,15 @@
 .card__like-button:hover {
   opacity: 0.6;
 }
+
+.button-like {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.like {
+line-height: 15.73px;
+height: 13px;
+margin: 3px 0 0 0;
+}
