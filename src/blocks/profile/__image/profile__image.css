@@ -35,7 +35,10 @@
   width: 24px;
   background-position: center;
   z-index: 1;
-  inset-area: center;
+  /* inset-area: center; */
+  transform: translate(-50%, -50%);
+  left: 50%;
+  top: 50%;
 }
 
 /* .profile__image:hover::before {
