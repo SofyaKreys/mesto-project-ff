@@ -26,11 +26,11 @@
 //       link: "https://pictures.s3.yandex.net/frontend-developer/cards-compressed/baikal.jpg",
 //     }
 // ];
-
+import {putLikeCard, deleteLikeCard} from './api';
 
 const cardTemplate = document.querySelector('#card-template').content;
 
-export function createCard(item, {deleteCard, likeCard, openImage}, ) {
+export function createCard(item, {deleteCard, likeCard, openImage}, userId) {
   const cardTemplateCopy = cardTemplate.cloneNode(true);
   const cardImage = cardTemplateCopy.querySelector(".card__image");
   const cardTitle = cardTemplateCopy.querySelector(".card__title");
@@ -52,13 +52,15 @@ export function createCard(item, {deleteCard, likeCard, openImage}, ) {
   deleteButton.addEventListener('click', deleteCard);
 
   const likeButton = cardTemplateCopy.querySelector('.card__like-button');
-  likeButton.addEventListener('click', likeCard);
+  likeButton.addEventListener('click', (evt) => {
+    likeCard(evt, cardCount, cardItem, likeButton);
+  });
 
   
   cardImage.addEventListener('click', openImage);
 
 
-  if (item.owner._id != window.me._id) {
+  if (item.owner._id != userId) {
     cardTemplateCopy.querySelector('#card__delete').remove();
   }
 
@@ -66,34 +68,28 @@ export function createCard(item, {deleteCard, likeCard, openImage}, ) {
 }
 
 
-export function likeCard(evt) {
-  const card = evt.target.closest('.card');
-  const cardCount = card.querySelector('#like-count');
+export function likeCard(evt, count, card, like) {
+  // console.log(evt, count, id, like);
+  
+  // const cardCount = card.querySelector('#like-count');
 
-  if (evt.target.classList.contains('card__like-button_is-active')) {
-
-  fetch(`https://nomoreparties.co/v1/wff-cohort-26/cards/likes/${card.dataset.idcard}`, {
-    method: 'DELETE',
-    headers: {
-      authorization: '839b686b-1261-4d4d-8af6-118db8d9e09c'
-    }
-  }).then(res => res.json())
+  if (like.classList.contains('card__like-button_is-active')) {
+    deleteLikeCard(card)
   .then((result) => {
-    cardCount.innerHTML = result.likes.length;
-    evt.target.classList.remove('card__like-button_is-active');
-})
+    count.innerHTML = result.likes.length;
+    like.classList.remove('card__like-button_is-active');
+}).catch((err) => {
+  console.log(err);
+});
 } else {
 
-  fetch(`https://nomoreparties.co/v1/wff-cohort-26/cards/likes/${card.dataset.idcard}`, {
-    method: 'PUT',
-    headers: {
-      authorization: '839b686b-1261-4d4d-8af6-118db8d9e09c'
-    }
-  }).then(res => res.json())
+  putLikeCard(card)
   .then((result) => {
-    cardCount.innerHTML = result.likes.length;
-    evt.target.classList.add('card__like-button_is-active');
-})
+    count.innerHTML = result.likes.length;
+    like.classList.add('card__like-button_is-active');
+}).catch((err) => {
+  console.log(err);
+});
 
 }}
 
@@ -101,7 +97,7 @@ export function deleteCard(e) {
 
   const card = e.target.closest('.card');
 
-  console.log(card.dataset)
+  // console.log(card.dataset)
   fetch(`https://nomoreparties.co/v1/wff-cohort-26/cards/${card.dataset.idcard}`, {
     method: 'DELETE',
     headers: {

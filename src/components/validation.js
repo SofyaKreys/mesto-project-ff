@@ -1,8 +1,18 @@
+export const validationConfig = {
+    formSelector: '.popup__form',
+    inputSelector: '.popup__input',
+    submitButtonSelector: '.popup__button',
+    inactiveButtonClass: 'popup__button_disabled',
+    inputErrorClass: 'form__input_type_error',
+    errorClass: 'form__input-error_active'
+  };
+
 export const hideError = (formElement, inputElement) => {
+    console.log(formElement, 'тутутутуту');
     // удалите класс ошибки с элемента input
     const formError = formElement.querySelector(`.${inputElement.id}-error`);
-    inputElement.classList.remove('form__input_type_error');
-    formError.classList.remove('form__input-error_active');
+    inputElement.classList.remove(validationConfig.inputErrorClass);
+    formError.classList.remove(validationConfig.errorClass);
     formError.textContent = " ";
   };
 
@@ -16,8 +26,10 @@ export const hasInvalidInput = (inputList) => {
 export const toggleButtonState = (inputList, buttonElement, inactiveButtonClass) => {
     if (hasInvalidInput(inputList)) {
     buttonElement.classList.add(inactiveButtonClass);
+    buttonElement.setAttribute('disabled', '');
   } else {
     buttonElement.classList.remove(inactiveButtonClass);
+    buttonElement.removeAttribute('disabled');
   }
   }
 

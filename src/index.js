@@ -4,11 +4,11 @@ import { likeCard, deleteCard, createCard} from './components/cards.js';
 
 import {openModal, closeModal, closeByKey, closeOverlay} from '../src/components/modal.js';
 
-import {hasInvalidInput, toggleButtonState, setEventListeners, enableValidation, checkInputValidity, clearValidation, hideError} from '../src/components/validation.js'
+import {hasInvalidInput, toggleButtonState, setEventListeners, enableValidation, checkInputValidity, clearValidation, hideError, validationConfig} from '../src/components/validation.js'
 
 import '../src/pages/index.css';
 
-import {submitAvatar, submitCard, submitEdit, getCard, getUser} from '../src/components/api.js';
+import {submitAvatar, submitCard, submitEdit, getCard, getUser, putLikeCard, deleteLikeCard} from '../src/components/api.js';
 
 
 const list = document.querySelector('.places__list');
@@ -41,34 +41,26 @@ const popupNewAvatar = document.getElementById('popupNewAvatar');
 const closeButtonAvatar = popupNewAvatar.querySelector('.popup__close');
 const formAvatar = document.forms["avatar"];
 const linkAvatar = formAvatar.elements.link;
+let userId = '';
+//  const getDataCard = () => {
+//     return new Promise((resolve, reject) => {
+//   return getCard()
 
-
- const getDataCard = () => {
-    return new Promise((resolve, reject) => {
-  return getCard()
-
-      .then((result) => {
-        // console.log(result)
-        resolve(result);
+//       .then((result) => {
+//         // console.log(result)
+//         resolve(result);
       
-    })
-    .catch(reject)
-      });
-}
+//     })
+//     .catch(reject)
+//       });
+// }
 
 // закрытие и открытие "Новое место" NewCard
 // const popup = document.querySelector('.popup_is-opened');
 
 function openPopupNewCard() {
     openModal(popupNewCard)
-    clearValidation(popupNewCard, {
-        formSelector: '.popup__form',
-        inputSelector: '.popup__input',
-        submitButtonSelector: '.popup__button',
-        inactiveButtonClass: 'popup__button_disabled',
-        inputErrorClass: 'form__input_type_error',
-        errorClass: 'form__input-error_active'
-      });
+    clearValidation(popupNewCard, validationConfig);
 }
 
 // function closePopupNewCard() {
@@ -92,14 +84,7 @@ addAvatarButton.addEventListener('click', openPopupAvatar);
 
 function openPopupAvatar() {
 openModal(popupNewAvatar);
-clearValidation(popupNewAvatar, {
-    formSelector: '.popup__form',
-    inputSelector: '.popup__input',
-    submitButtonSelector: '.popup__button',
-    inactiveButtonClass: 'popup__button_disabled',
-    inputErrorClass: 'form__input_type_error',
-    errorClass: 'form__input-error_active'
-  });
+clearValidation(popupNewAvatar, validationConfig);
 }
 
 closeButtonAvatar.addEventListener('click', () => closeModal(popupNewAvatar)); 
@@ -114,12 +99,18 @@ function handleFormSubmitAvatar(evt) {
 
     submitAvatar(linkAvatar.value)
         .then((result) => {
-            addAvatarButton.src = result;
-            buttonAvatar.textContent = 'Сохранить';
-      }); 
-
-    formAvatar.reset();
+            // console.log(result);
+            addAvatarButton.style.backgroundImage = `url(${result.avatar})`;
+            // buttonAvatar.textContent = 'Сохранить';
+            formAvatar.reset();
     closeModal(popupNewAvatar);
+      }).catch((err) => {
+        console.log(err);
+      }).finally (() => {
+        buttonAvatar.textContent = 'Сохранить';
+      });
+
+    
 
 }
 
@@ -144,13 +135,15 @@ function handleFormSubmitCard(evt) {
     submitCard(name.value, link.value)
         .then((result) => {
         // console.log('здесь консоль лог',result)
-        list.prepend(createCard(result, {deleteCard, likeCard, openImage}))
-        buttonCard.textContent = 'Сохранить';
-      }); 
-
-    formCards.reset();
+        list.prepend(createCard(result, {deleteCard, likeCard, openImage}, userId));
+        formCards.reset();
     closeModal(popupNewCard);
-
+        
+      }).catch((err) => {
+        console.log(err);
+      }).finally(() => {
+        buttonCard.textContent = 'Сохранить';
+      });
 
 }
 
@@ -165,14 +158,7 @@ formCards.addEventListener('submit', handleFormSubmitCard);
 
 function openPopupEdit() {
     openModal(popupEdit)
-    clearValidation(popupEdit, {
-        formSelector: '.popup__form',
-        inputSelector: '.popup__input',
-        submitButtonSelector: '.popup__button',
-        inactiveButtonClass: 'popup__button_disabled',
-        inputErrorClass: 'form__input_type_error',
-        errorClass: 'form__input-error_active'
-      });
+    clearValidation(popupEdit, validationConfig);
     // подставление значений
     nameInput.value = profileTitle.textContent;
     jobInput.value = profileDescription.textContent;
@@ -207,11 +193,14 @@ function handleFormSubmitEdit(evt) {
     profileDescription.textContent = jobInput.value;
     submitEdit(nameInput.value, jobInput.value)
     .then((result) => {
+        closePopupEdit();
         
-        buttonEdit.textContent = 'Сохранить';
+  }).catch((err) => {
+    console.log(err);
+  }).finally(() => {
+    buttonEdit.textContent = 'Сохранить';
   });
 
-      closePopupEdit();
 }
 
 // Прикрепляем обработчик к форме:
@@ -249,14 +238,7 @@ popupImage.addEventListener('click', closeOverlay);
 // const popupInputCardDescription = document.querySelector('.popup__input_type_description');
 
   // Вызовем функцию
-  enableValidation({
-    formSelector: '.popup__form',
-    inputSelector: '.popup__input',
-    submitButtonSelector: '.popup__button',
-    inactiveButtonClass: 'popup__button_disabled',
-    inputErrorClass: 'form__input_type_error',
-    errorClass: 'form__input-error_active'
-  }); 
+  enableValidation(validationConfig); 
 
 
   popupEditProfile.addEventListener('submit', function (evt) {
@@ -273,32 +255,38 @@ popupImage.addEventListener('click', closeOverlay);
 
 const avatarUser = document.querySelector('.profile__image');
 
-const getDataUser = () => {
-    return new Promise((resolve, reject) => {
-        getUser()
-            .then((result) => {
-                console.log(result);
-                profileTitle.textContent = result.name;
-                profileDescription.textContent = result.about;
-                avatarUser.style.backgroundImage = `url(${result.avatar})`;
-                resolve(result)
-            })
-            .catch(reject)
-    })
-}
+// const getDataUser = () => {
+//     return new Promise((resolve, reject) => {
+//         getUser()
+//             .then((result) => {
+//                 console.log(result);
+//                 profileTitle.textContent = result.name;
+//                 profileDescription.textContent = result.about;
+//                 avatarUser.style.backgroundImage = `url(${result.avatar})`;
+//                 resolve(result)
+//             })
+//             .catch(reject)
+//     })
+// }
 
 
 Promise.all([
-    getDataUser(),
-    getDataCard()
+    getUser(),
+    getCard()
 ]).then((result) => {
-    window.cards = result[1];
-    window.me = result[0];
-    console.log(result[1]);
+    // window.cards = result[1];
+    userId = result[0]._id;
+    // window.me = result[0];
+    // console.log(result[1]);
     result[1].forEach((item) => {
-        list.append(createCard(item, {deleteCard, likeCard, openImage}));
+        list.append(createCard(item, {deleteCard, likeCard, openImage}, userId));
     })
-})
+    profileTitle.textContent = result[0].name;
+    profileDescription.textContent = result[0].about;
+    avatarUser.style.backgroundImage = `url(${result[0].avatar})`;
+}).catch((err) => {
+    console.log(err)
+});
 
 
 
