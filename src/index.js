@@ -4,7 +4,7 @@ import { likeCard, deleteCard, createCard} from './components/cards.js';
 
 import {openModal, closeModal, closeByKey, closeOverlay} from '../src/components/modal.js';
 
-import {hasInvalidInput, toggleButtonState, setEventListeners, enableValidation, checkInputValidity, clearValidation, hideError, validationConfig} from '../src/components/validation.js'
+import {hasInvalidInput, toggleButtonState, setEventListeners, enableValidation, checkInputValidity, clearValidation, hideError} from '../src/components/validation.js'
 
 import '../src/pages/index.css';
 
@@ -42,6 +42,15 @@ const closeButtonAvatar = popupNewAvatar.querySelector('.popup__close');
 const formAvatar = document.forms["avatar"];
 const linkAvatar = formAvatar.elements.link;
 let userId = '';
+const validationConfig = {
+    formSelector: '.popup__form',
+    inputSelector: '.popup__input',
+    submitButtonSelector: '.popup__button',
+    inactiveButtonClass: 'popup__button_disabled',
+    inputErrorClass: 'form__input_type_error',
+    errorClass: 'form__input-error_active'
+  };
+
 //  const getDataCard = () => {
 //     return new Promise((resolve, reject) => {
 //   return getCard()

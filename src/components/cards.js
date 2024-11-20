@@ -26,7 +26,7 @@
 //       link: "https://pictures.s3.yandex.net/frontend-developer/cards-compressed/baikal.jpg",
 //     }
 // ];
-import {putLikeCard, deleteLikeCard} from './api';
+import {putLikeCard, deleteLikeCard, deleteCardFetch} from './api';
 
 const cardTemplate = document.querySelector('#card-template').content;
 
@@ -74,7 +74,7 @@ export function likeCard(evt, count, card, like) {
   // const cardCount = card.querySelector('#like-count');
 
   if (like.classList.contains('card__like-button_is-active')) {
-    deleteLikeCard(card)
+    deleteLikeCard(card.dataset.idcard)
   .then((result) => {
     count.innerHTML = result.likes.length;
     like.classList.remove('card__like-button_is-active');
@@ -83,7 +83,7 @@ export function likeCard(evt, count, card, like) {
 });
 } else {
 
-  putLikeCard(card)
+  putLikeCard(card.dataset.idcard)
   .then((result) => {
     count.innerHTML = result.likes.length;
     like.classList.add('card__like-button_is-active');
@@ -98,15 +98,12 @@ export function deleteCard(e) {
   const card = e.target.closest('.card');
 
   // console.log(card.dataset)
-  fetch(`https://nomoreparties.co/v1/wff-cohort-26/cards/${card.dataset.idcard}`, {
-    method: 'DELETE',
-    headers: {
-      authorization: '839b686b-1261-4d4d-8af6-118db8d9e09c'
-    }
-  }).then(res => res.json())
+  deleteCardFetch(card.dataset.idcard)
   .then(() => {
     
   card.remove();
-})
+}).catch((err) => {
+  console.log(err);
+});
   
 } 

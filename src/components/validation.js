@@ -1,14 +1,6 @@
-export const validationConfig = {
-    formSelector: '.popup__form',
-    inputSelector: '.popup__input',
-    submitButtonSelector: '.popup__button',
-    inactiveButtonClass: 'popup__button_disabled',
-    inputErrorClass: 'form__input_type_error',
-    errorClass: 'form__input-error_active'
-  };
 
-export const hideError = (formElement, inputElement) => {
-    console.log(formElement, 'тутутутуту');
+export const hideError = (formElement, inputElement, validationConfig) => {
+    // console.log(formElement, 'тутутутуту');
     // удалите класс ошибки с элемента input
     const formError = formElement.querySelector(`.${inputElement.id}-error`);
     inputElement.classList.remove(validationConfig.inputErrorClass);
@@ -23,49 +15,49 @@ export const hasInvalidInput = (inputList) => {
     });
     }
 
-export const toggleButtonState = (inputList, buttonElement, inactiveButtonClass) => {
+export const toggleButtonState = (inputList, buttonElement, validationConfig) => {
     if (hasInvalidInput(inputList)) {
-    buttonElement.classList.add(inactiveButtonClass);
+    buttonElement.classList.add(validationConfig.inactiveButtonClass);
     buttonElement.setAttribute('disabled', '');
   } else {
-    buttonElement.classList.remove(inactiveButtonClass);
+    buttonElement.classList.remove(validationConfig.inactiveButtonClass);
     buttonElement.removeAttribute('disabled');
   }
   }
 
-export const setEventListeners = (formElement, inputSelector, submitButtonSelector, inactiveButtonClass, inputErrorClass, errorClass) => {
-    const inputList = Array.from(formElement.querySelectorAll(inputSelector));
-    const buttonElement = formElement.querySelector(submitButtonSelector);
-    toggleButtonState(inputList, buttonElement, inactiveButtonClass);
+export const setEventListeners = (formElement, validationConfig) => {
+    const inputList = Array.from(formElement.querySelectorAll(validationConfig.inputSelector));
+    const buttonElement = formElement.querySelector(validationConfig.submitButtonSelector);
+    toggleButtonState(inputList, buttonElement, validationConfig);
     inputList.forEach((inputElement) => {
       inputElement.addEventListener('input', function () {
-        checkInputValidity(formElement, inputElement, inputErrorClass, errorClass);
-        toggleButtonState(inputList, buttonElement, inactiveButtonClass);
+        checkInputValidity(formElement, inputElement, validationConfig);
+        toggleButtonState(inputList, buttonElement, validationConfig);
       });
     });
 };
 
-export const enableValidation = ({ formSelector, inputSelector, submitButtonSelector, inactiveButtonClass, inputErrorClass, errorClass }) => {
-    const formList = Array.from(document.querySelectorAll(formSelector));
+export const enableValidation = (validationConfig) => {
+    const formList = Array.from(document.querySelectorAll(validationConfig.formSelector));
     
     // Переберём полученную коллекцию
     formList.forEach((formElement) => {
       // Для каждой формы вызовем функцию setEventListeners,
       // передав ей элемент формы
-      setEventListeners(formElement, inputSelector, submitButtonSelector, inactiveButtonClass, inputErrorClass, errorClass);
+      setEventListeners(formElement, validationConfig);
 
     });
   };
 
-export const showError = (formElement, inputElement, errorMessage, inputErrorClass, errorClass) => {
+export const showError = (formElement, inputElement, errorMessage, validationConfig) => {
     // добавьте класс ошибки элементу input
     const formError = formElement.querySelector(`.${inputElement.id}-error`);
-    inputElement.classList.add(inputErrorClass);
+    inputElement.classList.add(validationConfig.inputErrorClass);
     formError.textContent = errorMessage;
-    formError.classList.add(errorClass);
+    formError.classList.add(validationConfig.errorClass);
   };
 
-export const checkInputValidity = (formElement, inputElement, inputErrorClass, errorClass) => {
+export const checkInputValidity = (formElement, inputElement, validationConfig) => {
     if (inputElement.validity.patternMismatch) {
         // данные атрибута доступны у элемента инпута через ключевое слово dataset.
         // обратите внимание, что в js имя атрибута пишется в camelCase (да-да, в
@@ -76,19 +68,19 @@ export const checkInputValidity = (formElement, inputElement, inputErrorClass, e
   }
 
     if (!inputElement.validity.valid) {
-    showError(formElement, inputElement, inputElement.validationMessage, inputErrorClass, errorClass) 
+    showError(formElement, inputElement, inputElement.validationMessage, validationConfig) 
   } else {
-    hideError(formElement, inputElement)
+    hideError(formElement, inputElement, validationConfig)
     
   }
   }
 
-export const clearValidation = (formElement,{ inputSelector, submitButtonSelector, inactiveButtonClass }) => {
-    const inputList = Array.from(formElement.querySelectorAll(inputSelector));
-    const buttonElement = formElement.querySelector(submitButtonSelector);
+export const clearValidation = (formElement, validationConfig) => {
+    const inputList = Array.from(formElement.querySelectorAll(validationConfig.inputSelector));
+    const buttonElement = formElement.querySelector(validationConfig.submitButtonSelector);
     inputList.forEach((inputElement) => {
-        hideError(formElement, inputElement)
+        hideError(formElement, inputElement, validationConfig)
     });
-    toggleButtonState(inputList, buttonElement, inactiveButtonClass);
+    toggleButtonState(inputList, buttonElement, validationConfig);
 }
 
